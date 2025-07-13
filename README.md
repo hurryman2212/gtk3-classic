@@ -7,15 +7,17 @@
 ![Screenshot of some of the tweaks](.github/readme/preview.png)
 
 This repository contains patches to restore GTK 3's look & feel reminiscent to
-earlier versions. With many enhancements such as disabled CSD headers,
+earlier versions. With many enhancements such as disabled CSD headers (on X11),
 traditional dialog boxes and file browser improvements.
 
 These are designed to work on non-GNOME desktops (such as XFCE and MATE)
 and any other environment where GTK applications are used. Running
 on GNOME desktops is not recommended!
 
-[View Screenshots](https://github.com/lah7/gtk3-classic/wiki/Screenshots) |
-[View Wiki](https://github.com/lah7/gtk3-classic/wiki)
+[Patch List](README.Patches.md) |
+[Environment Variables](README.Variables.md) |
+[Screenshots](https://github.com/lah7/gtk3-classic/wiki/Screenshots) |
+[Wiki](https://github.com/lah7/gtk3-classic/wiki)
 
 
 ## About
@@ -25,12 +27,26 @@ that apply on top of the GTK 3 source code. It's not a fork of GTK 3.
 
 This repository acts as a central hub for these patches and will keep rolling
 if there's a new GTK 3 release. The patches aim to bring a bit of reminiscence
-to GTK 2 and GTK 3's early days (hence, "classic")
+to GTK 2 and GTK 3's early days (hence, "classic").
+[See below on contributing patches.](#contributing)
 
 **This repository is provided as-is, with no warranty or guaranteed support.**
-While the patched installation should just work, you are entering unsupported tertiary.
+While the patched installation should just work, you are entering unsupported territory.
 
-[View Patches](#patches)
+
+## Patches
+
+See these files:
+
+* [README.Patches.md](README.Patches.md) — a complete list of what patches do.
+* [README.Variables.md](README.Variables.md) — a summary
+of the available environment variables.
+
+Some patches are optional behind environment variables or an additional step
+[(like enabling alternating colour rows)](https://github.com/lah7/gtk3-classic/wiki/Treeview:-Alternating-Colours-CSS)
+
+For best results, [try downgrading](https://github.com/lah7/gtk3-classic/wiki/Downgraded-GNOME-GTK-applications)
+and pinning older versions of GTK 3 applications.
 
 
 ## Download
@@ -39,11 +55,15 @@ While the patched installation should just work, you are entering unsupported te
 * [Gentoo](#gentoo)
 * [Ubuntu (LTS)](#ubuntu) (discontinued)
 
+See [#111](https://github.com/lah7/gtk3-classic/issues/111) for details about
+Debian builds based on these patches.
+
+
 ### Arch Linux
 
 [![AUR](https://img.shields.io/aur/version/gtk3-classic?label=AUR&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/gtk3-classic/)
 
-Available from the AUR under [`gtk3-classic`](https://aur.archlinux.org/packages/gtk3-classic/) (previously `gtk3-mushrooms`)
+Available from the AUR under [`gtk3-classic`](https://aur.archlinux.org/packages/gtk3-classic/) (previously `gtk3-mushrooms`).
 
 Based on the official [`gtk3`](https://archlinux.org/packages/extra/x86_64/gtk3/) package
 with some changes to make the package more lightweight:
@@ -59,7 +79,7 @@ with some changes to make the package more lightweight:
 There's a few ways to install:
 
 * The [release notes](https://github.com/lah7/gtk3-classic/releases/latest) contains a package
-built autonomously by [GitHub Actions](https://github.com/lah7/gtk3-classic/actions) for your convenience.
+built autonomously by [GitHub Actions](https://github.com/lah7/gtk3-classic/actions?query=branch%3Amaster) for your convenience.
 
       sudo pacman -U ./*.tar.zst
 
@@ -75,7 +95,7 @@ built autonomously by [GitHub Actions](https://github.com/lah7/gtk3-classic/acti
       cd gtk3-classic
       makepkg -s
 
-    > This [repository's PKGBUILD](https://github.com/lah7/gtk3-classic/blob/master/PKGBUILD) allows for selectively choosing patches.
+    To exclude patches, comment (`#`) them out in the `series` file.
 
 
 ### Ubuntu
@@ -133,86 +153,6 @@ To revert to standard GTK 3, remove the patches and rebuild GTK 3:
     sudo emerge -av1 gtk+:3
 
 
-## Patches
-
-#### Client Side Decorations (only on Xorg)
-
-* **CSDs are disabled by default**
-  * Allows the window manager to decorate windows instead of the application.
-  * This **does not work** for all (usually, newer) GTK applications [(#32)](https://github.com/lah7/gtk3-classic/issues/32)
-  * If the app looks broken, set the environment variable `GTK_CSD=0` per app (or in your desktop environment) to restore CSDs.
-  * It is possible to set `GTK_CSD=1` to force CSDs on each GTK 3 window.
-* Client side shadows of windows, menus and tooltips are disabled by default.
-  * You can enable shadows by setting `GTK_CSD=1` environment variable.
-* Minimize, maximize and close buttons, window title and subtitle are removed from headerbar.
-
-#### File chooser
-
-* **Typeahead feature is restored.**
-  * Recursive file search will not be ran automatically when you start typing.
-  * You can still search recursively by Left <kbd>Alt</kbd> + <kbd>S</kbd> shortcut. See https://gitlab.gnome.org/GNOME/gtk/issues/839.
-* "Other locations" button is removed from Places sidebar.
-  * All mounted devices and drives are accessible directly.
-  * "Networks" button is added for browsing network shares.
-* Trash and XDG user directories (like Pictures, Downloads, Documents) are removed from Places sidebar.
-  * These can be added as bookmarks.
-* File System button in Places sidebar is labeled as "File System" instead of "Computer".
-* The eject button in the Places sidebar can be hidden by setting `gtk-file-chooser-eject-button=false` in `settings.ini`.
-
-#### Appearance
-
-* [Alternating row colours in treeviews are restored.](https://github.com/lah7/gtk3-classic/wiki/Treeview:-Alternating-Colours-CSS) (requires additional step)
-* Message dialogs have traditional appearance with left-aligned texts and right-aligned buttons.
-* Some GTK stock icons on buttons and context menus are restored.
-* Regular colorized icons instead of symbolic icons are used in file chooser dialog.
-* Appearance of print dialog is less "gnomish", natural margins are restored.
-* Backdrop CSS state is disabled.
-  * Inactive windows don't look differently.
-  * You can restore backdrop state by setting `GTK_CSD=1` or `GTK_BACKDROP=1` environment variable.
-* Status bars are smaller regardless of used theme.
-* File chooser dialog, places sidebar and color chooser dialog use a traditional context menu instead of popover.
-
-#### Default Settings
-
-* Scrollbars are always visible.
-  * You can enable invisible scrollbars by `GTK_OVERLAY_SCROLLING=1` environment variable.
-* Current working directory is opened by default in file chooser dialog instead recently used files.
-* Atril instead of Evince is set as default previewer in printing dialog.
-
-#### Other
-
-* The underline while typing dead keys is [removed](https://blog.gtk.org/2021/03/24/input-revisited/).
-* Delay before showing mnemonics is removed. You don't have to wait when you press <kbd>Alt</kbd>.
-* "Insert emoji" context menu item of entry fields is hidden.
-  * You can restore it by setting `GTKM_INSERT_EMOJI` environment variable.
-* Default Adwaita theme has smaller controls (buttons, fields, tabs, etc.).
-
-#### Fixes
-
-* Reinstate the ability to switch between standard tabs by scrolling over them, similar to GTK 2.
-  * This can be disabled by setting `GTK_NO_TAB_SCROLL` environment variable.
-* ~~Menu bars are no longer covered by too high popup menus.~~ **(patch broken)**
-  * See https://gitlab.gnome.org/GNOME/gtk/issues/1016.
-* Labels are wrapped similarly to GTK 2. This patch fixes too wide windows in applications improperly ported from GTK 2.
-* Allows windows to be transparent whenever a compositor is enabled.
-  * To enable, set the `GTK_RELAX_RGBA` environment variable.
-  * See https://gitlab.gnome.org/GNOME/gtk/-/issues/3105
-* Remove hardcoded "gtk-dialogs-use-header" setting under Wayland [(#93)](https://github.com/lah7/gtk3-classic/pull/93)
-* The _primary selection_ is no longer cleared when deselecting text.
-  * This refers to an X.org feature that lets you middle click to paste the last highlighted text at the mouse pointer's position. This is separate from your main clipboard (CTRL+C, CTRL+V).
-  * This makes GTK consistent with other toolkits.
-  * See https://gitlab.gnome.org/GNOME/gtk/-/issues/317
-
-#### Build time
-
-* `atk-bridge` can be optionally disabled. [(#101)](https://github.com/lah7/gtk3-classic/pull/101)
-  * Similar to how you could build with `--without-atk-bridge` over a decade ago.
-  * This would remove support for accessibility features; some apps could break.
-  * Allows for D-Bus to be an optional dependency. [(#40)](https://github.com/lah7/gtk3-classic/issues/40)
-  * To build without this feature, set meson option `atk_bridge` to `false` (default: `true`) and remove the dependencies from your package accordingly.
-    * For Arch, here's a reference of [PKGBUILD changes to make](https://github.com/lah7/gtk3-classic/issues/110#issuecomment-2098950276). The ATK packages are only used as build dependencies, but can be uninstalled afterwards.
-
-
 ## Problems?
 
 These patches are for your own pleasure. They are **not supported by GTK developers,
@@ -221,14 +161,16 @@ them because of this patched GTK 3 installation.
 
 If you are having trouble with an application or theme, try:
 
-* Setting `GTK_CSD=0` environment variable, then run the application.
+* Run the application from the terminal with `GTK_CSD=0` before the command.
 * Revert to the original `gtk3` to confirm these patches caused the problem.
 
 If a patch is at fault, Arch and Gentoo users for instance can comment out (`#`)
 patches in `series` until they find the one causing it.
 
-Arch users can use the included `scripts/test-exclude-each-patch.sh` script.
+Arch users can use the included [`scripts/test-exclude-each-patch.sh`] script.
 It'll exclude one patch at a time and create builds using the `PKGBUILD` in this repository.
+
+[`scripts/test-exclude-each-patch.sh`]: https://github.com/lah7/gtk3-classic/blob/master/scripts/test-exclude-each-patch.sh
 
 
 ## Contributing
@@ -241,9 +183,7 @@ You are welcome to open a pull request with a new patch [or fix](https://github.
 * Offers "classic" functionality remensiant of GTK 2 or early versions of GTK 3.
 * Optional behind an environment variable if it introduces a significant change.
 
-Patches should be added using the `quilt` system.
-
-[How to use `quilt`](https://github.com/lah7/gtk3-classic/wiki/Creating-and-Managing-Patches)
+Patches are added [using the `quilt` system.](https://github.com/lah7/gtk3-classic/wiki/Creating-and-Managing-Patches)
 
 Our primary packaging and testing happens on Arch. Checksums in `PKGBUILD`
 need to be updated to pass the automated checks. On an Arch system, these can be
@@ -262,10 +202,16 @@ and automated checks run, it'll fail ❌ and present a patch of required changes
 The [Discussions](https://github.com/lah7/gtk3-classic/discussions) tab
 is where you can find curated tips, chat, support and introductions from other users.
 
-XFCE users might be interested in this additional patch for the file chooser:
+Here are some complementary projects and themes for your classic experience:
 
-* https://github.com/lah7/gtk3-classic/pull/94/files
-* https://aur.archlinux.org/packages/gtk3-classic-xfce (for Arch Linux users)
+- [Human theme](https://github.com/luigifab/human-theme)
+  - Plus, [@luigifab's gist with additional GTK 3 and GTK 4 patches](https://gist.github.com/luigifab/0fce786cdb93b5687069a82f490ea95e)
+- [Raleigh theme & icons](https://github.com/thesquash/gtk-theme-raleigh)
+- [Bluecurve theme & icons](https://www.gnome-look.org/p/2191581)
+- [Ambiant-MATE theme & icons](https://github.com/lah7/Ambiant-MATE)
+- [@thesquash's gtk3-classic-module](https://github.com/thesquash/gtk3-classic-module) _(featuring many of these patches without needing to recompile GTK 3)_
+- XFCE users might be interested in [this additional patch for the file chooser.](https://patch-diff.githubusercontent.com/raw/lah7/gtk3-classic/pull/94.patch)
+  - Avaliable from the AUR as [`gtk3-classic-xfce`](https://aur.archlinux.org/packages/gtk3-classic-xfce)
 
 
 ## License
